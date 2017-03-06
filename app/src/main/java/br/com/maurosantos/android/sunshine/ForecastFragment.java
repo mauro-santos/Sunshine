@@ -7,13 +7,18 @@ package br.com.maurosantos.android.sunshine;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.NetworkOnMainThreadException;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,6 +38,14 @@ public class ForecastFragment extends Fragment {
     ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Habilitar o menu do fragment
+        this.setHasOptionsMenu(true);
     }
 
     @Override
@@ -64,6 +77,24 @@ public class ForecastFragment extends Fragment {
         listView.setAdapter(mForecastAdapter);
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.forecast_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.opcaoAtualizar:
+                Toast.makeText(getActivity(), R.string.menu_opcao_atualizar, Toast.LENGTH_SHORT).show();
+                new FetchWeatherTask().execute();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public class FetchWeatherTask extends AsyncTask<Void, Void, Void> {
@@ -125,12 +156,12 @@ public class ForecastFragment extends Fragment {
                 forecastJsonStr = buffer.toString();
 
             } catch (NetworkOnMainThreadException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, "NetworkOnMainThreadException ", e);
                 // If the code didn't successfully get the weather data, there's no point in attempting
                 // to parse it.
                 forecastJsonStr = null;
             } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, "IOException ", e);
                 // If the code didn't successfully get the weather data, there's no point in attempting
                 // to parse it.
 //                forecastJsonStr = null;
@@ -143,9 +174,9 @@ public class ForecastFragment extends Fragment {
                     try {
                         reader.close();
                     } catch (final NetworkOnMainThreadException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
+                        Log.e(LOG_TAG, "Error closing stream (NetworkOnMainThreadException)", e);
                     } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
+                        Log.e(LOG_TAG, "Error closing stream (IOException)", e);
                     }
                 }
             }
