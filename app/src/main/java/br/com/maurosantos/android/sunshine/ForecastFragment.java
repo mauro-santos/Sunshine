@@ -89,7 +89,7 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.opcaoAtualizar:
-                Toast.makeText(getActivity(), R.string.menu_opcao_atualizar, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.atualizando, Toast.LENGTH_SHORT).show();
                 new FetchWeatherTask().execute();
                 break;
         }
@@ -154,6 +154,8 @@ public class ForecastFragment extends Fragment {
                 }
 
                 forecastJsonStr = buffer.toString();
+
+                Log.v(LOG_TAG, "Forecast JSON String: " + forecastJsonStr);
 
             } catch (NetworkOnMainThreadException e) {
                 Log.e(LOG_TAG, "NetworkOnMainThreadException ", e);
